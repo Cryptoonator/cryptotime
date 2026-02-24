@@ -197,6 +197,20 @@ w[coin]-=amt; ref.set(w); updateWalletUI(w);
 });
 }
 </script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
 
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBAH70DLpeT6sBW-bJ7EITRk_u58Mj6REU",
+  authDomain: "crypt0-time.firebaseapp.com",
+  projectId: "crypt0-time",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+</script>
 </body>
 </html>
