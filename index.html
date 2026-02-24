@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CryptoExchange</title>
-
+<title>CryptoExchange GitHub + Firebase</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
 body{background:#0b0e11;color:white;}
@@ -21,6 +19,7 @@ button{padding:10px 20px;background:#f0b90b;border:none;border-radius:6px;font-w
 input,select{padding:8px;width:100%;margin-top:5px;border-radius:6px;border:none;background:#1e2329;color:white;}
 table{width:100%;border-collapse:collapse;margin-top:20px;}
 th,td{padding:12px;border-bottom:1px solid #1e2329;}
+th{color:#848e9c;font-weight:400;}
 .green{color:#0ecb81;}
 .red{color:#f6465d;}
 .card{background:#1e2329;padding:20px;border-radius:10px;margin-bottom:20px;}
@@ -28,7 +27,6 @@ th,td{padding:12px;border-bottom:1px solid #1e2329;}
 #chartContainer{margin:50px auto;max-width:800px;height:400px;}
 </style>
 </head>
-
 <body>
 
 <nav>
@@ -42,106 +40,72 @@ th,td{padding:12px;border-bottom:1px solid #1e2329;}
 </nav>
 
 <section class="hero">
-<h1>CryptoExchange 🚀</h1>
-<p>Logowanie, portfel i ceny kryptowalut</p>
+<h1>CryptoExchange GitHub + Firebase 🚀</h1>
+<p>Logowanie, portfel i ceny kryptowalut w czasie rzeczywistym</p>
 </section>
 
 <section id="market">
-<h2>Rynek kryptowalut</h2>
-
+<h2>Rynek kryptowalut 📊</h2>
 <table>
-<thead>
-<tr>
-<th>Kryptowaluta</th>
-<th>Cena</th>
-<th>Zmiana 24h</th>
-</tr>
-</thead>
-
+<thead><tr><th>Kryptowaluta</th><th>Cena</th><th>Zmiana 24h</th></tr></thead>
 <tbody id="marketTable"></tbody>
-
 </table>
 </section>
 
 <section id="chartContainer">
 <h2>Wykres BTC</h2>
-<div id="tradingview_widget"></div>
+<div class="tradingview-widget-container"><div id="tradingview_widget"></div></div>
 </section>
 
 <section id="loginForm">
-
 <div class="card">
 <h2>Rejestracja</h2>
-
-<label>Email</label>
-<input type="email" id="regEmail">
-
-<label>Hasło</label>
-<input type="password" id="regPass">
-
+<label>Email:</label><input type="email" id="regEmail">
+<label>Hasło:</label><input type="password" id="regPass">
 <button onclick="register()">Zarejestruj</button>
-
 </div>
 
 <div class="card">
-
 <h2>Logowanie</h2>
-
-<label>Email</label>
-<input type="email" id="loginEmail">
-
-<label>Hasło</label>
-<input type="password" id="loginPass">
-
+<label>Email:</label><input type="email" id="loginEmail">
+<label>Hasło:</label><input type="password" id="loginPass">
 <button onclick="login()">Zaloguj</button>
-
 <div id="welcome"></div>
-
 </div>
-
 </section>
 
 <section id="wallet">
-
 <div class="card">
-
 <h2>Twój portfel</h2>
-
 <p id="walletInfo">Zaloguj się aby zobaczyć saldo</p>
-
-<label>Krypto</label>
-
+<label>Wybierz krypto:</label>
 <select id="coinSelect">
 <option value="bitcoin">Bitcoin</option>
 <option value="ethereum">Ethereum</option>
 <option value="solana">Solana</option>
 </select>
-
-<label>Ilość</label>
-<input type="number" id="coinAmount">
-
+<label>Ilość:</label><input type="number" id="coinAmount">
 <button onclick="buyCoin()">Kup</button>
 <button onclick="sellCoin()">Sprzedaj</button>
-
 </div>
-
 </section>
 
-<footer style="text-align:center;padding:20px">
-© 2026 CryptoExchange
-</footer>
+<footer>© 2026 CryptoExchange</footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js"></script>
-<script src="https://s3.tradingview.com/tv.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
 <script>
 
 const firebaseConfig = {
-apiKey: "AIzaSyBAH70DLpeT6sBW-bJ7EITRk_u58Mj6REU",
-authDomain: "crypt0-time.firebaseapp.com",
-projectId: "crypt0-time"
+  apiKey: "AIzaSyBAH70DLpeT6sBW-bJ7EITRk_u58Mj6REU",
+  authDomain: "crypt0-time.firebaseapp.com",
+  projectId: "crypt0-time",
+  storageBucket: "crypt0-time.appspot.com",
+  messagingSenderId: "852214833540",
+  appId: "1:852214833540:web:8f3b555baab472f92cbdd1"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -149,46 +113,27 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+</script>
+
+// 🔹 Ceny kryptowalut z CoinGecko
 async function loadPrices(){
-
 const url="https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true";
-
 const res=await fetch(url);
-
 const data=await res.json();
-
-const coins=[
-{name:"Bitcoin",key:"bitcoin"},
-{name:"Ethereum",key:"ethereum"},
-{name:"Solana",key:"solana"}
-];
-
+const coins=[{name:"Bitcoin",key:"bitcoin"},{name:"Ethereum",key:"ethereum"},{name:"Solana",key:"solana"}];
 let html="";
-
 coins.forEach(c=>{
-
 let price=data[c.key].usd;
-
 let change=data[c.key].usd_24h_change;
-
 let color=change>0?"green":"red";
-
-html+=`<tr>
-<td>${c.name}</td>
-<td>$${price}</td>
-<td class="${color}">${change.toFixed(2)}%</td>
-</tr>`;
-
+html+=`<tr><td>${c.name}</td><td>$${price}</td><td class="${color}">${change.toFixed(2)}%</td></tr>`;
 });
-
 document.getElementById("marketTable").innerHTML=html;
-
 }
-
 loadPrices();
-
 setInterval(loadPrices,10000);
 
+// 🔹 TradingView Widget
 new TradingView.widget({
 symbol:"COINBASE:BTCUSD",
 width:"100%",
@@ -197,145 +142,82 @@ theme:"dark",
 container_id:"tradingview_widget"
 });
 
+// 🔹 Rejestracja użytkownika
 function register(){
-
 let email=document.getElementById("regEmail").value;
-
 let pass=document.getElementById("regPass").value;
-
 auth.createUserWithEmailAndPassword(email,pass)
-
-.then(user=>{
-
-alert("Konto utworzone!");
-
-initWallet(user.user.uid);
-
-})
-
+.then(user=>{alert("Konto utworzone!"); initWallet(user.user.uid);})
 .catch(err=>alert(err.message));
-
 }
 
+// 🔹 Logowanie
 let currentUser=null;
-
 function login(){
-
 let email=document.getElementById("loginEmail").value;
-
 let pass=document.getElementById("loginPass").value;
-
 auth.signInWithEmailAndPassword(email,pass)
-
-.then(user=>{
-
-currentUser=user.user.uid;
-
-document.getElementById("welcome").innerText="Witaj "+email;
-
-loadWallet();
-
-})
-
+.then(user=>{currentUser=user.user.uid; document.getElementById("welcome").innerText="Witaj, "+email+"! 🚀"; loadWallet();})
 .catch(err=>alert(err.message));
-
 }
 
+// 🔹 Portfel użytkownika
 function initWallet(uid){
-
-db.collection("wallets").doc(uid).set({
-bitcoin:0,
-ethereum:0,
-solana:0
-});
-
+db.collection("wallets").doc(uid).set({bitcoin:0,ethereum:0,solana:0});
 }
 
 function loadWallet(){
-
-db.collection("wallets").doc(currentUser)
-
-.get()
-
-.then(doc=>{
-
-if(doc.exists){
-
-updateWalletUI(doc.data());
-
-}
-
+if(!currentUser){document.getElementById("walletInfo").innerText="Zaloguj się"; return;}
+db.collection("wallets").doc(currentUser).get().then(doc=>{
+if(doc.exists){updateWalletUI(doc.data());}
 });
-
 }
 
 function updateWalletUI(data){
-
-let str="Saldo:\n";
-
-for(let c in data){
-
-str+=c+": "+data[c]+"\n";
-
-}
-
+let str="Saldo portfela:\n";
+for(let c in data) str+=c+": "+data[c]+"\n";
 document.getElementById("walletInfo").innerText=str;
-
 }
 
 function buyCoin(){
-
+if(!currentUser){alert("Zaloguj się"); return;}
 let coin=document.getElementById("coinSelect").value;
-
 let amt=parseFloat(document.getElementById("coinAmount").value);
-
+if(amt<=0){alert("Podaj poprawną ilość"); return;}
 let ref=db.collection("wallets").doc(currentUser);
-
 ref.get().then(doc=>{
-
 let w=doc.data();
-
 w[coin]+=amt;
-
-ref.set(w);
-
-updateWalletUI(w);
-
+ref.set(w); updateWalletUI(w);
 });
-
 }
 
 function sellCoin(){
-
+if(!currentUser){alert("Zaloguj się"); return;}
 let coin=document.getElementById("coinSelect").value;
-
 let amt=parseFloat(document.getElementById("coinAmount").value);
-
 let ref=db.collection("wallets").doc(currentUser);
-
 ref.get().then(doc=>{
-
 let w=doc.data();
-
-if(amt>w[coin]){
-
-alert("Za mało krypto");
-
-return;
-
-}
-
-w[coin]-=amt;
-
-ref.set(w);
-
-updateWalletUI(w);
-
+if(amt>w[coin]){alert("Za mało krypto"); return;}
+w[coin]-=amt; ref.set(w); updateWalletUI(w);
 });
-
 }
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBAH70DLpeT6sBW-bJ7EITRk_u58Mj6REU",
+  authDomain: "crypt0-time.firebaseapp.com",
+  projectId: "crypt0-time",
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
 </script>
-
 </body>
 </html>
